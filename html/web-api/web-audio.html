@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>web api</title>
+    <link rel="icon" href="data:;base64,=">
+    <style>
+
+    </style>
+</head>
+<body>
+    <div class="web-api_audio">
+        <div class="web-audio_card">
+            <div class="web-audio_head">web api audio</div>
+            <div class="web-audio_body">
+                <div id="error" class="web-audio_close"></div>
+                <div class="web-audio_audio">
+                    <audio controls src="./files/cat.mp3" id="audio"></audio>
+                </div>
+                <div>
+                    <button class="web-audio-btns" onclick="audioFromAudioFile.init()">Init</button>
+                    <button class="web-audio-btns" onclick="audioFromAudioFile.play()">Play</button>
+                    <button class="web-audio-btns" onclick="audioFromAudioFile.pause()">Pause</button>
+                    <button class="web-audio-btns" onclick="audioFromAudioFile.stop()">Stop</button>
+                </div>
+                <div>
+                    <span>
+                        Vol: <input 
+                                type="range" 
+                                min="1" 
+                                max="3" 
+                                id="vol" 
+                                onchange="audioFromAudioFile.changeVolume()" 
+                                step="0.1" 
+                                value="1"/>
+                    </span>
+                    <span>
+                        Pan: <input
+                                onchange="audioFromAudioFile.changePan()"
+                                type="range" 
+                                id="panner" 
+                                min="-1"
+                                max="1" 
+                                step="0.01" 
+                                value="0" />
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let audioFromAudioFile = (function () {
+            let audio = document.getElementById('audio');
+            let error = document.getElementById('error');
+            let vol = document.getElementById('vol');
+            let pan = document.getElementById('pan');
+
+            let audioContext = new AudioContext();
+            let volNode = audioContext.createGain();
+            let pannerNode = new StereoPannerNode(audioContext, { pan: 0 });
+
+            function init() {
+                try {
+                    let mediaSource = audioContext.createMediaElementSource(audio);
+                    volNode.gain.value = 1;
+                   
+
+                    mediaSource.connect(volNode).connect(pannerNode).connect(audioContext)
+                } catch (err) {
+                    error.innerHTML = "The Web Audio API is not supported in this device.";
+                    error.classList.remove("close");
+                }
+            }
+
+            function play() {
+                audio.play();
+            }
+
+            function pause() {
+                audio.pause();
+            }
+
+            function stop() {
+                audio.stop();
+            }
+
+            function changeVolume() {
+                volNode.gain.value = vol.value;
+            }
+
+            function changePan() {
+                pannerNode.gain.value = pan.value;
+            }
+
+            return {
+                init,
+                play,
+                pause,
+                stop,
+                changeVolume,
+                changePan
+            }
+        })()
+    </script>
+</body>
+</html>
